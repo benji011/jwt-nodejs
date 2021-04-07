@@ -3,12 +3,7 @@ require('dotenv').config()
 const jwt = require('jsonwebtoken')
 const express = require('express')
 const authentication = require('../middleware/authentication')
-const {
-  AUTH_PORT,
-  STATUS_UNAUTHORIZED,
-  STATUS_FORBIDDEN,
-  REFRESH_TOKEN_SECRET,
-} = require('../constants/constants')
+const { AUTH_PORT } = require('../constants/constants')
 
 const app = express()
 
