@@ -14,6 +14,8 @@ const STATUS_INTERNAL_SERVER_ERROR = 500
 const STATUS_CREATED = 201
 // Access token expiry
 const ACCESS_TOKEN_EXPIRY = '30m'
+// Salt value
+const SALT = 16
 
 module.exports = {
   SUPABASE_URL,
@@ -28,4 +30,5 @@ module.exports = {
   STATUS_INTERNAL_SERVER_ERROR,
   STATUS_CREATED,
   ACCESS_TOKEN_EXPIRY,
+  SALT,
 }

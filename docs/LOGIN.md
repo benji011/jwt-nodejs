@@ -8,7 +8,8 @@
 
 ```bash
 {
-  username: "Ben"
+  "email": "testuser@example.com",
+  "password": "testusers_password"
 }
 ```
 
@@ -16,7 +17,8 @@
 
 ```bash
 {
-    "accessToken": "your_access_token"
+    "accessToken": "your_access_token",
+    "refreshToken": "your_refresh_token"
 }
 ```
 

@@ -13,6 +13,7 @@ const {
   STATUS_CREATED,
   SUPABASE_URL,
   SUPABASE_KEY,
+  SALT,
 } = require('../constants/constants')
 
 // Initialize supabase client
@@ -27,7 +28,7 @@ app.use(express.json())
  */
 app.post('/register', async (req, res) => {
   try {
-    const salt = await bcrypt.genSalt(16)
+    const salt = await bcrypt.genSalt(SALT)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
     const user = {
       username: req.body.username,
@@ -66,7 +67,7 @@ app.post('/register', async (req, res) => {
 app.post('/login', async (req, res) => {
   try {
     const email = req.body.email
-    const salt = await bcrypt.genSalt(16)
+    const salt = await bcrypt.genSalt(SALT)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
     const user = { email: email, password: hashedPassword }
 
