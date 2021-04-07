@@ -1,6 +1,6 @@
 ## Road map for this app
 
-Stuff to add before releasing to public
+Need to add more in this doc later
 
 1. Add `/register` endpoint
 2. Hash + salt passwords
