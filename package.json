@@ -1,0 +1,22 @@
+{
+  "name": "jwt-node",
+  "version": "1.0.0",
+  "description": "A simple NodeJS app to generate JWT after logging a user in and saving their account info on Supabase",
+  "main": "index.js",
+  "author": "Benjamin Lo",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7",
+    "prettier": "^2.2.1"
+  },
+  "scripts": {
+    "start:auth": "nodemon ./src/auth/server.js",
+    "start:api": "nodemon ./src/api/server.js",
+    "prettier": "prettier --config .prettierrc 'src/**/*.js' --write"
+  }
+}

@@ -1,0 +1,21 @@
+// Server ports
+const API_PORT = 3000
+const AUTH_PORT = 4000
+// Access tokens
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET
+// Response status codes
+const STATUS_UNAUTHORIZED = 401
+const STATUS_FORBIDDEN = 403
+// Access token expiry
+const ACCESS_TOKEN_EXPIRY = '30m'
+
+module.exports = {
+  API_PORT,
+  AUTH_PORT,
+  ACCESS_TOKEN_SECRET,
+  REFRESH_TOKEN_SECRET,
+  STATUS_UNAUTHORIZED,
+  STATUS_FORBIDDEN,
+  ACCESS_TOKEN_EXPIRY,
+}
