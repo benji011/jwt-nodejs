@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js')
+const { _ } = require('lodash')
 
 require('dotenv').config()
 
@@ -26,7 +27,7 @@ app.use(express.json())
  */
 app.post('/register', async (req, res) => {
   try {
-    const salt = 16
+    const salt = await bcrypt.genSalt(16)
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
     const user = {
       username: req.body.username,
@@ -61,18 +62,41 @@ app.post('/register', async (req, res) => {
 
 /**
  * Authenticate user then get a JWT
- * TODO: Salt hashed passwords with bcrypt later
  */
-app.post('/login', (req, res) => {
-  const email = req.body.email
-  const password = req.body.password
-  const user = { email: email }
-  const jwtSignedAccessToken = authentication.generateAccessToken(user)
-  const jwtSignedRefreshToken = authentication.generateRefreshToken(user)
-  res.json({
-    accessToken: jwtSignedAccessToken,
-    refreshToken: jwtSignedRefreshToken,
-  })
+app.post('/login', async (req, res) => {
+  try {
+    const email = req.body.email
+    const salt = await bcrypt.genSalt(16)
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    const user = { email: email, password: hashedPassword }
+
+    const { data: data } = await supabase
+      .from('users')
+      .select('password')
+      .eq('email', email)
+    const supabasePassword = _.map(data, 'password')[0]
+
+    // Compare the hashed password with what we found from the DB with that email
+    const validPassword = await bcrypt.compare(
+      req.body.password,
+      supabasePassword
+    )
+    if (validPassword) {
+      // Assuming authentication was completed, generate then return an access and refresh token.
+      const jwtSignedAccessToken = authentication.generateAccessToken(user)
+      const jwtSignedRefreshToken = authentication.generateRefreshToken(user)
+      res.json({
+        accessToken: jwtSignedAccessToken,
+        refreshToken: jwtSignedRefreshToken,
+      })
+    } else {
+      res.json({
+        message: 'Either the password is wrong or something else went wrong',
+      })
+    }
+  } catch {
+    res.sendStatus(STATUS_BAD_GATEWAY)
+  }
 })
 
 /**
