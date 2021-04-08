@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js')
+const cors = require('cors')
 const { _ } = require('lodash')
 
 require('dotenv').config()
@@ -22,6 +23,11 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 // Initialize as an Express app
 const app = express()
 app.use(express.json())
+app.use(
+  cors({
+    origin: 'http://localhost:3001',
+  })
+)
 
 /**
  * Register user account
