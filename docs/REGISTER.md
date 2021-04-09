@@ -16,12 +16,25 @@
 }
 ```
 
-## Sample response
+## Sample response (for new users)
 
-```bash
+```json
 {
-  Created
+  "message": "testuser2 created!",
+  "status": 201
 }
 ```
 
+An email will then be sent to the (currently assign) test user email with an activation URL. This URL, when clicked, will activate the user for them to being able to login.
+
+[Read about logging in here](../docs/LOGIN.md)
+
 ※ Take note the port number here. The API server runs on **port 4000**
+
+## Sample response (for existing users)
+
+```json
+{
+  "error": "A user with the email address \"testuser2@example.com\" already exists."
+}
+```

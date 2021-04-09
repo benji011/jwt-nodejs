@@ -75,7 +75,10 @@ app.post('/register', async (req, res) => {
           email_to: user.email,
           url: confirmationUrl,
         })
-        res.sendStatus(STATUS_CREATED)
+        res.json({
+          message: `${user.username} created!`,
+          status: STATUS_CREATED,
+        })
       }
     }
   } catch {
@@ -146,8 +149,8 @@ app.get('/confirmation', async (req, res) => {
     .from('users')
     .select('*')
     .eq('uuid', uuid)
-    .eq('confirmation_code', 'TBC')
-    .neq('is_activated', true)
+    .neq('confirmation_code', 'TBC')
+    .neq('is_activated', false)
 
   if (error) {
     res.json({
@@ -157,7 +160,7 @@ app.get('/confirmation', async (req, res) => {
   }
   // If the user has not been activated then we can update, else return
   // message that the user is already confirmed.
-  if (data) {
+  if (data.length > 0) {
     res.json({
       message: `${uuid} has already been activated! No action required :)`,
     })
@@ -172,7 +175,7 @@ app.get('/confirmation', async (req, res) => {
     }
     res.json({
       message: 'Account activated',
-      user: data,
+      user: uuid,
     })
   }
 })
