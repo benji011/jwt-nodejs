@@ -45,7 +45,9 @@ app.post('/register', async (req, res) => {
       lastname: req.body.lastname,
       email: req.body.email,
       password: hashedPassword,
+      confirmation_url: 'TBC',
     }
+    // Need to check that has already been registered or not.
     const { data: users, error } = await supabase
       .from('users')
       .select('email')
@@ -58,14 +60,17 @@ app.post('/register', async (req, res) => {
         error: `A user with the email address "${user.email}" already exists.`,
       })
     } else {
+      // Insert user data into the table if there is no error, else send confirmation email
+      // and return registration was successful.
       const { data, error } = await supabase.from('users').insert([user])
       if (error) {
         res.sendStatus(STATUS_INTERNAL_SERVER_ERROR)
       } else {
+        // Generate an email confirmation URL based on the UUID of this user.
         const uuid = _.find(data, { username: user.username }).uuid
         const emailSecret = authentication.generateEmailSecretToken(uuid)
         const confirmationUrl = `${APP_DOMAIN}:3001/confirmation/${emailSecret}`
-        // Send confirmation email to user after registering
+        // Send confirmation email
         mailService.sendMessage({
           username: user.username,
           email_to: user.email,

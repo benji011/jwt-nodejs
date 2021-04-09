@@ -7,12 +7,12 @@ const mg = mailgun({
   domain: process.env.MAILGUN_DOMAIN,
 })
 
-const EMAIL_TO = process.env.MAILGUN_SENDER
-
+const EMAIL_from = process.env.MAILGUN_SENDER
+const MAIL_TO = process.env.MAILGUN_RECIPENT
 const sendMessage = (payload) => {
   const data = {
-    from: EMAIL_TO,
-    to: payload.email_to,
+    from: EMAIL_from,
+    to: MAIL_TO, //payload.email_to,
     subject: 'Yggdrasil - Activate your account',
     text: `Hi ${payload.username}! Please confirm your account through this link -> ${payload.url}`,
   }
