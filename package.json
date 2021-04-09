@@ -12,6 +12,7 @@
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "mailgun-js": "^0.22.0",
     "nodemailer": "^6.5.0",
     "supabase": "^0.3.6"
   },
@@ -23,6 +24,7 @@
   "scripts": {
     "start:auth": "nodemon ./src/auth/server.js",
     "start:api": "nodemon ./src/api/server.js",
-    "prettier": "prettier --config .prettierrc 'src/**/*.js' --write"
+    "prettier": "prettier --config .prettierrc 'src/**/*.js' --write",
+    "service:email": "node ./src/services/sendEmail.js"
   }
 }

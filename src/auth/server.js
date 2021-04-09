@@ -7,6 +7,8 @@ require('dotenv').config()
 const express = require('express')
 const bcrypt = require('bcrypt')
 const authentication = require('../middleware/authentication')
+const mailService = require('../services/sendEmail')
+
 const {
   AUTH_PORT,
   STATUS_BAD_GATEWAY,
@@ -19,13 +21,14 @@ const {
 
 // Initialize supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+const APP_DOMAIN = process.env.DOMAIN
 
 // Initialize as an Express app
 const app = express()
 app.use(express.json())
 app.use(
   cors({
-    origin: 'http://localhost:3001',
+    origin: `${APP_DOMAIN}:3001`,
   })
 )
 
@@ -55,10 +58,19 @@ app.post('/register', async (req, res) => {
         error: `A user with the email address "${user.email}" already exists.`,
       })
     } else {
-      const { error } = await supabase.from('users').insert([user])
+      const { data, error } = await supabase.from('users').insert([user])
       if (error) {
         res.sendStatus(STATUS_INTERNAL_SERVER_ERROR)
       } else {
+        const uuid = _.find(data, { username: user.username }).uuid
+        const emailSecret = authentication.generateEmailSecretToken(uuid)
+        const confirmationUrl = `${APP_DOMAIN}:3001/confirmation/${emailSecret}`
+        // Send confirmation email to user after registering
+        mailService.sendMessage({
+          username: user.username,
+          email_to: user.email,
+          url: confirmationUrl,
+        })
         res.sendStatus(STATUS_CREATED)
       }
     }
