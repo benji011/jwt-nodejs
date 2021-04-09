@@ -45,7 +45,6 @@ app.post('/register', async (req, res) => {
       lastname: req.body.lastname,
       email: req.body.email,
       password: hashedPassword,
-      confirmation_url: 'TBC',
     }
     // Need to check that has already been registered or not.
     const { data: users, error } = await supabase
@@ -129,6 +128,53 @@ app.post('/login', async (req, res) => {
  */
 app.post('/token', (req, res) => {
   return authentication.verifyAccessToken(req, res)
+})
+
+/**
+ * Activates user account using the token provided.
+ */
+app.get('/confirmation', async (req, res) => {
+  const uuid = req.query.uuid
+  const token = req.query.token
+
+  if (!uuid || !token) {
+    res.sendStatus(STATUS_BAD_GATEWAY)
+  }
+
+  // Checks if user was confirmed already
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('uuid', uuid)
+    .eq('confirmation_code', 'TBC')
+    .neq('is_activated', true)
+
+  if (error) {
+    res.json({
+      error: error,
+      status: STATUS_INTERNAL_SERVER_ERROR,
+    })
+  }
+  // If the user has not been activated then we can update, else return
+  // message that the user is already confirmed.
+  if (data) {
+    res.json({
+      message: `${uuid} has already been activated! No action required :)`,
+    })
+  } else {
+    const { data, error } = await supabase
+      .from('users')
+      .update({ confirmation_code: token, is_activated: true })
+      .eq('uuid', uuid)
+
+    if (error) {
+      res.sendStatus(STATUS_INTERNAL_SERVER_ERROR)
+    }
+    res.json({
+      message: 'Account activated',
+      user: data,
+    })
+  }
 })
 
 /**
