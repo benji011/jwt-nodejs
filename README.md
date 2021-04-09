@@ -63,5 +63,7 @@ yarn start:api
 
 ## Sample API endpoints
 
-- [Logging in to obtain access token](./docs/LOGIN.md)
-- [GET posts after login](./docs/GET_posts.md)
+- [POST register user account](./docs/REGISTER.md)
+- [GET activate user account](./docs/CONFIRMATION.md)
+- [GET Logging in to obtain access token](./docs/LOGIN.md)
+- [GET posts after login](./docs/POSTS.md)
