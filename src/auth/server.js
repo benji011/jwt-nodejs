@@ -7,6 +7,8 @@ require('dotenv').config()
 const express = require('express')
 const bcrypt = require('bcrypt')
 const authentication = require('../middleware/authentication')
+const mailService = require('../services/sendEmail')
+
 const {
   AUTH_PORT,
   STATUS_BAD_GATEWAY,
@@ -19,13 +21,14 @@ const {
 
 // Initialize supabase client
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+const APP_DOMAIN = process.env.DOMAIN
 
 // Initialize as an Express app
 const app = express()
 app.use(express.json())
 app.use(
   cors({
-    origin: 'http://localhost:3001',
+    origin: `${APP_DOMAIN}:3001`,
   })
 )
 
@@ -43,6 +46,7 @@ app.post('/register', async (req, res) => {
       email: req.body.email,
       password: hashedPassword,
     }
+    // Need to check that has already been registered or not.
     const { data: users, error } = await supabase
       .from('users')
       .select('email')
@@ -55,10 +59,22 @@ app.post('/register', async (req, res) => {
         error: `A user with the email address "${user.email}" already exists.`,
       })
     } else {
-      const { error } = await supabase.from('users').insert([user])
+      // Insert user data into the table if there is no error, else send confirmation email
+      // and return registration was successful.
+      const { data, error } = await supabase.from('users').insert([user])
       if (error) {
         res.sendStatus(STATUS_INTERNAL_SERVER_ERROR)
       } else {
+        // Generate an email confirmation URL based on the UUID of this user.
+        const uuid = _.find(data, { username: user.username }).uuid
+        const emailSecret = authentication.generateEmailSecretToken(uuid)
+        const confirmationUrl = `${APP_DOMAIN}:3001/confirmation/${emailSecret}`
+        // Send confirmation email
+        mailService.sendMessage({
+          username: user.username,
+          email_to: user.email,
+          url: confirmationUrl,
+        })
         res.sendStatus(STATUS_CREATED)
       }
     }
@@ -112,6 +128,53 @@ app.post('/login', async (req, res) => {
  */
 app.post('/token', (req, res) => {
   return authentication.verifyAccessToken(req, res)
+})
+
+/**
+ * Activates user account using the token provided.
+ */
+app.get('/confirmation', async (req, res) => {
+  const uuid = req.query.uuid
+  const token = req.query.token
+
+  if (!uuid || !token) {
+    res.sendStatus(STATUS_BAD_GATEWAY)
+  }
+
+  // Checks if user was confirmed already
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('uuid', uuid)
+    .eq('confirmation_code', 'TBC')
+    .neq('is_activated', true)
+
+  if (error) {
+    res.json({
+      error: error,
+      status: STATUS_INTERNAL_SERVER_ERROR,
+    })
+  }
+  // If the user has not been activated then we can update, else return
+  // message that the user is already confirmed.
+  if (data) {
+    res.json({
+      message: `${uuid} has already been activated! No action required :)`,
+    })
+  } else {
+    const { data, error } = await supabase
+      .from('users')
+      .update({ confirmation_code: token, is_activated: true })
+      .eq('uuid', uuid)
+
+    if (error) {
+      res.sendStatus(STATUS_INTERNAL_SERVER_ERROR)
+    }
+    res.json({
+      message: 'Account activated',
+      user: data,
+    })
+  }
 })
 
 /**

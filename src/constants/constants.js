@@ -1,3 +1,4 @@
+const DOMAIN = process.env.DOMAIN
 const SUPABASE_URL = process.env.SUPABASE_URL
 const SUPABASE_KEY = process.env.SUPABASE_KEY
 // Server ports
@@ -18,6 +19,7 @@ const ACCESS_TOKEN_EXPIRY = '30m'
 const SALT = 16
 
 module.exports = {
+  DOMAIN,
   SUPABASE_URL,
   SUPABASE_KEY,
   API_PORT,

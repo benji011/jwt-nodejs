@@ -13,10 +13,20 @@ const {
  * Generate a refresh token that doesn't expire
  *
  * @param {*} user
- * @returns JWT signed reresh token
+ * @returns JWT signed refresh token
  */
 const generateRefreshToken = (user) => {
   return jwt.sign(user, REFRESH_TOKEN_SECRET)
+}
+
+/**
+ * Generate an email secret token
+ *
+ * @param {*} uuid
+ * @returns JWT signed email secret token
+ */
+const generateEmailSecretToken = (uuid) => {
+  return jwt.sign(uuid, REFRESH_TOKEN_SECRET)
 }
 
 /**
@@ -75,6 +85,7 @@ const verifyAccessToken = (req, res) => {
 module.exports = {
   generateRefreshToken,
   generateAccessToken,
+  generateEmailSecretToken,
   authenticateAccessToken,
   verifyAccessToken,
 }
