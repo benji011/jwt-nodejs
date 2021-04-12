@@ -96,10 +96,12 @@ app.post('/login', async (req, res) => {
     const hashedPassword = await bcrypt.hash(req.body.password, salt)
     const user = { email: email, password: hashedPassword }
 
-    const { data: data } = await supabase
+    const { data } = await supabase
       .from('users')
-      .select('password')
+      .select('password, is_activated')
       .eq('email', email)
+
+    const isActivated = _.map(data, 'is_activated')[0]
     const supabasePassword = _.map(data, 'password')[0]
 
     // Compare the hashed password with what we found from the DB with that email
@@ -107,7 +109,7 @@ app.post('/login', async (req, res) => {
       req.body.password,
       supabasePassword
     )
-    if (validPassword) {
+    if (validPassword && isActivated) {
       // Assuming authentication was completed, generate then return an access and refresh token.
       const jwtSignedAccessToken = authentication.generateAccessToken(user)
       const jwtSignedRefreshToken = authentication.generateRefreshToken(user)
@@ -117,7 +119,8 @@ app.post('/login', async (req, res) => {
       })
     } else {
       res.json({
-        message: 'Either the password is wrong or something else went wrong',
+        message:
+          'Either the password is wrong, the account has not yet been activated or something else went wrong',
       })
     }
   } catch {
