@@ -68,7 +68,7 @@ app.post('/register', async (req, res) => {
         // Generate an email confirmation URL based on the UUID of this user.
         const uuid = _.find(data, { username: user.username }).uuid
         const emailSecret = authentication.generateEmailSecretToken(uuid)
-        const confirmationUrl = `${APP_DOMAIN}:3001/confirmation/${emailSecret}`
+        const confirmationUrl = `${APP_DOMAIN}:3001/confirmation/${emailSecret}/${uuid}`
         // Send confirmation email
         mailService.sendMessage({
           username: user.username,
