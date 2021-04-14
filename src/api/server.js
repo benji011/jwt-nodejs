@@ -1,5 +1,6 @@
 require('dotenv').config()
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const postsData = require('../data/samplePosts')
 const newsfeedData = require('../data/newsfeed')
@@ -7,6 +8,11 @@ const authentication = require('../middleware/authentication')
 const { API_PORT } = require('../constants/constants')
 
 app.use(express.json())
+app.use(
+  cors({
+    origin: process.env.ORIGIN,
+  })
+)
 
 app.get('/posts', authentication.authenticateAccessToken, (req, res) => {
   const posts = postsData.posts
