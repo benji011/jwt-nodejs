@@ -98,12 +98,13 @@ app.post('/login', async (req, res) => {
 
     const { data } = await supabase
       .from('users')
-      .select('password, username, is_activated')
+      .select('password, username, is_activated,uuid')
       .eq('email', email)
 
     const isActivated = _.map(data, 'is_activated')[0]
     const supabasePassword = _.map(data, 'password')[0]
     const username = _.map(data, 'username')[0]
+    const uuid = _.map(data, 'uuid')[0]
 
     // Compare the hashed password with what we found from the DB with that email
     const validPassword = await bcrypt.compare(
@@ -118,6 +119,7 @@ app.post('/login', async (req, res) => {
         accessToken: jwtSignedAccessToken,
         refreshToken: jwtSignedRefreshToken,
         username: username,
+        uuid: uuid,
       })
     } else {
       res.json({
