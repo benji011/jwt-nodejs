@@ -22,8 +22,7 @@
     "prettier": "^2.2.1"
   },
   "scripts": {
-    "start:auth": "nodemon ./src/auth/server.js",
-    "start:api": "nodemon ./src/api/server.js",
+    "start": "nodemon ./src/auth/server.js",
     "prettier": "prettier --config .prettierrc 'src/**/*.js' --write",
     "service:email": "node ./src/services/sendEmail.js"
   }
