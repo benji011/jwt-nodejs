@@ -1,0 +1,3 @@
+[submodule "src/jwt-node-api"]
+	path = src/jwt-node-api
+	url = git@github.com:benji011/jwt-node-api.git
