@@ -8,7 +8,9 @@ The current structure is separated into 2 services as shown below in the `src/` 
 
 ```bash
 ./src
-├── api
+├── jwt-node-api
+│   └── constants
+│   └── middleware
 │   └── server.js
 ├── auth
 │   └── server.js
@@ -18,7 +20,7 @@ The current structure is separated into 2 services as shown below in the `src/` 
     └── authentication.js
 ```
 
-| src/api/server.js                                      | src/auth/server.js                                             |
+| src/jwt-node-api                                       | src/auth/server.js                                             |
 | ------------------------------------------------------ | -------------------------------------------------------------- |
 | Handles the API endpoints for stuff like GET resources | Handles authentication & distributing access & refresh tokens. |
 
@@ -36,13 +38,13 @@ yarn
 2. In 1 window run the authentication server
 
 ```bash
-yarn start:auth
+yarn start
 ```
 
 3. In another window, run the API server
 
 ```bash
-yarn start:api
+cd src/jwt-node-api && yarn start
 ```
 
 ## Sample API endpoints
